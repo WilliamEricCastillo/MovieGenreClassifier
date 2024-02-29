@@ -1,41 +1,72 @@
 # Movie Genre Classifier
 
-This Python program utilizes APIs to retrieve movie data and then classifies movie genres based on their plots using natural language processing (NLP) techniques and machine learning.
+This repository contains Python scripts to scrape IMDb for movie plot summaries and store them in a MongoDB database, as well as to classify movie genres based on plot summaries using a Naive Bayes classifier.
 
-## APIs Used
-- [MoviesVerse API](https://rapidapi.com/Murad123/api/moviesverse1/): This API provides access to a collection of movies, including their titles.
-- [OMDb API](https://www.omdbapi.com/): This API is used to retrieve detailed information about movies, including their genres and plots.
+## Requirements
 
-## Dependencies
-- `requests`: For making HTTP requests to the APIs.
-- `nltk`: Natural Language Toolkit for tokenization and part-of-speech tagging.
-- `pickle`: For serializing and deserializing Python objects.
-- `sklearn`: Scikit-learn library for machine learning tasks.
+To run the scripts in this repository, you need the following:
 
-## Usage
-1. Run the script.
-2. Enter the plot of a movie when prompted.
-3. The program will predict the genre of the movie based on the provided plot.
-
-## How It Works
-1. Retrieves a list of top movies from the MoviesVerse API.
-2. Fetches detailed movie data from the OMDb API for each movie.
-3. Tokenizes and tags the plot of each movie to extract relevant keywords.
-4. Trains a Support Vector Machine (SVM) model using TF-IDF vectorization of the extracted keywords.
-5. Persists the trained model and TF-IDF vectorizer for future use.
-6. Accepts user input in the form of a movie plot.
-7. Preprocesses the user input and predicts the genre using the trained model.
-8. Outputs the predicted genre of the movie.
-
-## Files
-- `movie_genre_model.pkl`: Serialized SVM model for genre classification.
-- `tfidf_vectorizer.pkl`: Serialized TF-IDF vectorizer.
-- `README.md`: This documentation.
+- Python 3.x
+- `pymongo` library for MongoDB interaction
+- `requests` library for making HTTP requests
+- `beautifulsoup4` library for web scraping
+- `nltk` library for natural language processing tasks
+- `scikit-learn` library for machine learning tasks
+- `matplotlib` library for data visualization
+- `seaborn` library for enhanced data visualization
 
 ## Setup
-1. Clone the repository.
-2. Install the required dependencies using `pip install -r requirements.txt`.
-3. Run the script.
 
-## Contributing
-Contributions are welcome! Feel free to submit pull requests or open issues.
+1. Install the required Python libraries using pip:
+
+    ```
+    pip install pymongo requests beautifulsoup4 nltk scikit-learn matplotlib seaborn
+    ```
+
+2. Ensure you have a MongoDB instance running and obtain the connection string.
+
+## Usage
+
+### 1. MongoDB Connection
+
+Filename: `mongodb_connections.py`
+
+This script establishes a connection to your MongoDB database. You need to replace `"YOUR MONGODB CONNECTION STRING"` with your actual MongoDB connection string.
+
+### 2. IMDb Scraper
+
+Filename: `imdb_scraper_and_store_in_mongodb.py`
+
+This script scrapes IMDb for movie plot summaries, stores them in the MongoDB database, and associates them with respective genres.
+
+To use this script:
+- Update the `TABLE NAME` and `IMDb URL` variables accordingly.
+- Run the script.
+
+### 3. Movie Genre Classifier
+
+Filename: `Classifier.py`
+
+This script performs the following tasks:
+- Tokenizes and processes plot summaries, extracting nouns and adjectives.
+- Populates a dataset with keywords extracted from plot summaries stored in MongoDB.
+- Trains a Multinomial Naive Bayes classifier on the dataset.
+- Predicts the genre of a given plot summary based on user input.
+- Evaluates the model's performance using test data.
+
+To use this script:
+- Ensure MongoDB is populated with movie plot summaries.
+- Run the script in `Classifier.py`.
+
+## Limitations
+- The IMDb scraper relies on the structure of the IMDb website. Changes to the website structure may break the scraper.
+- The accuracy of the genre classifier may be limited by the quality and diversity of the training data.
+
+### Contributors
+
+- William Castillo 
+
+## Results
+
+The classifier achieved a test accuracy of 28% on a diverse dataset of movie genres.
+

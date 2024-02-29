@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 
+
 def process_text(text):
     """
     Tokenizes the input text, performs part-of-speech tagging,
@@ -53,6 +54,21 @@ def train_classifier(X, y):
     return classifier, vectorizer, X_test, y_test
 
 
+def predict_genre(plot_summary, classifier, vectorizer):
+    """
+    Predicts the genre of a given plot summary using a trained classifier and vectorizer.
+
+    :param plot_summary: The plot summary for which the genre is to be predicted.
+    :param classifier: The trained classifier model.
+    :param vectorizer: The vectorizer used to transform text data.
+    :return: The predicted genre of the plot summary.
+    """
+    plot_summary_processed = process_text(plot_summary)
+    plot_summary_vectorized = vectorizer.transform([plot_summary_processed])
+    predicted_genre = classifier.predict(plot_summary_vectorized)[0]
+    return predicted_genre
+
+
 def main():
     dbname = get_database()
     movieBank = ["Top_100_Action", "Top_100_Adventure", "Top_100_Comedies", "Top_100_Drama", "Top_100_Fantasy",
@@ -62,7 +78,16 @@ def main():
 
     populate_dataset(dbname, movieBank, dataset)
 
-    print(dataset)
+    # print(dataset)
+
+    X = [text for text, _ in dataset]
+    y = [genre for _, genre in dataset]
+
+    classifier, vectorizer, X_test, y_test = train_classifier(X, y)
+
+    plot_summary = input("Enter plot summary: ")
+    predicted_genre = predict_genre(plot_summary, classifier, vectorizer)
+    print("Predicted Genre:", predicted_genre)
 
 
 if __name__ == "__main__":

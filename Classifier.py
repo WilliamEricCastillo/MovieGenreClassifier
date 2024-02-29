@@ -1,7 +1,9 @@
 from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 from mongodb_connection import get_database
-
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
 
 def process_text(text):
     """
@@ -33,6 +35,22 @@ def populate_dataset(dbname, movieBank, dataset):
         for item in item_details:
             keywords = process_text(item["plot"])
             dataset.append((keywords, item["genre"]))
+
+
+def train_classifier(X, y):
+    """
+    Trains a Multinomial Naive Bayes classifier on the provided text data.
+
+    :param X: List of text data (plot summaries).
+    :param y: List of corresponding labels (genres).
+    :return: Tuple containing trained classifier, vectorizer, test features, and test labels.
+    """
+    vectorizer = CountVectorizer()
+    X_vectorized = vectorizer.fit_transform(X)
+    X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2, random_state=42)
+    classifier = MultinomialNB()
+    classifier.fit(X_train, y_train)
+    return classifier, vectorizer, X_test, y_test
 
 
 def main():

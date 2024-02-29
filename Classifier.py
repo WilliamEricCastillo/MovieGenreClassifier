@@ -4,6 +4,9 @@ from mongodb_connection import get_database
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def process_text(text):
@@ -69,6 +72,30 @@ def predict_genre(plot_summary, classifier, vectorizer):
     return predicted_genre
 
 
+def evaluate_model(classifier, X_test, y_test):
+    """
+    Evaluates the performance of a trained classifier on the test set.
+
+    :param classifier: The trained classifier model.
+    :param X_test: The feature matrix of the test set.
+    :param y_test: The true labels of the test set.
+    :return: The test accuracy score, confusion matrix, and classification report.
+    """
+    y_pred_test = classifier.predict(X_test)
+    test_accuracy = accuracy_score(y_test, y_pred_test)
+    conf_matrix = confusion_matrix(y_test, y_pred_test)
+    classification_rep = classification_report(y_test, y_pred_test)
+
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=classifier.classes_, yticklabels=classifier.classes_)
+    plt.xlabel("Predicted Labels")
+    plt.ylabel("True Labels")
+    plt.title("Confusion Matrix")
+    plt.show()
+
+    return test_accuracy, conf_matrix, classification_rep
+
+
 def main():
     dbname = get_database()
     movieBank = ["Top_100_Action", "Top_100_Adventure", "Top_100_Comedies", "Top_100_Drama", "Top_100_Fantasy",
@@ -85,9 +112,21 @@ def main():
 
     classifier, vectorizer, X_test, y_test = train_classifier(X, y)
 
-    plot_summary = input("Enter plot summary: ")
+    plot_summary = input("\nEnter plot summary: ")
+
+    while plot_summary == "":
+        print("Plot summary can not be blank")
+        plot_summary = input("\nEnter plot summary: ")
+
     predicted_genre = predict_genre(plot_summary, classifier, vectorizer)
-    print("Predicted Genre:", predicted_genre)
+    print("\nPredicted Genre:", predicted_genre)
+
+    test_accuracy, conf_matrix, classification_rep = evaluate_model(classifier, X_test, y_test)
+
+    print("\nTest Accuracy:", test_accuracy)
+
+    print("\nClassification Report:")
+    print(classification_rep)
 
 
 if __name__ == "__main__":

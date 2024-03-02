@@ -62,11 +62,10 @@ To use this script:
 - The IMDb scraper relies on the structure of the IMDb website. Changes to the website structure may break the scraper.
 - The accuracy of the genre classifier may be limited by the quality and diversity of the training data.
 
-### Contributors
-
-- William Castillo 
-
 ## Results
 
 The classifier achieved a test accuracy of 28% on a diverse dataset of movie genres.
 
+### Contributors
+
+- William Castillo 
